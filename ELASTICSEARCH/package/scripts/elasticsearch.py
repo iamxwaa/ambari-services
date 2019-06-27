@@ -12,8 +12,11 @@ class Elasticsearch(Script):
     import params
     env.set_params(params)
 
-    self.install_packages(env)
-    
+    #self.install_packages(env)
+    install_cmd = format("cd {files_dir};rpm -ivh {es_rpm_name}")
+    Logger.info(install_cmd)
+    os.system(install_cmd)
+
     Execute(format("usermod -G root {es_user}"))
     Execute(format("usermod -G hadoop {es_user}"))
     Execute(format("mkdir {es_data_path};chmod 777 {es_data_path}"))
@@ -44,8 +47,9 @@ class Elasticsearch(Script):
 
     self.configure(env)
       
-    start_cmd = 'su -s /bin/bash {es_user} -c "export JAVA_HOME={java_home};{es_home}/bin/elasticsearch -p {es_pid_path} --quiet -Edefault.path.logs={es_log_path} -Edefault.path.conf={es_config_path} -Edefault.path.data={es_data_path}"'
-    Execute(format(start_cmd), wait_for_finish=False)
+    start_cmd = format('su -s /bin/bash {es_user} -c "export JAVA_HOME={java_home};{es_home}/bin/elasticsearch -p {es_pid_path} --quiet -Edefault.path.logs={es_log_path} -Edefault.path.conf={es_config_path} -Edefault.path.data={es_data_path}"')
+    Execute(start_cmd, wait_for_finish=False)
+
 
   def stop(self, env):
     import params

@@ -34,3 +34,6 @@ cerebro_http_port = config['configurations']['cerebro-site']['cerebro.http.port'
 
 cerebro_config = config['configurations']['cerebro-site']['content']
 config_f_cerebro = es_home + "/" + cerebro_dir + "/conf/application.conf"
+
+files_dir = sys.path[0]+"/../files/"
+es_rpm_name = "elasticsearch-5.6.16.rpm"
