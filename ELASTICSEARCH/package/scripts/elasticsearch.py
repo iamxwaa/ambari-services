@@ -13,13 +13,14 @@ class Elasticsearch(Script):
     env.set_params(params)
 
     #self.install_packages(env)
-    install_cmd = format("cd {files_dir};rpm -ivh {es_rpm_name}")
-    Logger.info(install_cmd)
-    os.system(install_cmd)
-
-    Execute(format("usermod -G root {es_user}"))
-    Execute(format("usermod -G hadoop {es_user}"))
-    Execute(format("mkdir {es_data_path};chmod 777 {es_data_path}"))
+    test=format("{es_home}/bin/elasticsearch")
+    if not os.path.exists(test) :
+      install_cmd = format("cd {files_dir};rpm -ivh {es_rpm_name}")
+      Logger.info(install_cmd)
+      os.system(install_cmd)
+      Execute(format("usermod -G root {es_user}"))
+      Execute(format("usermod -G hadoop {es_user}"))
+      Execute(format("mkdir {es_data_path};chmod 777 {es_data_path}"))
     
     self.configure(env)
 
