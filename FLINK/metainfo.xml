@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<metainfo>
+    <schemaVersion>2.0</schemaVersion>
+    <services>
+        <service>
+            <name>FLINK</name>
+            <displayName>Flink</displayName>
+            <comment>Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams. Flink has been designed to run in all common cluster environments, perform computations at in-memory speed and at any scale.</comment>
+            <version>1.6.4</version>
+
+            <quickLinksConfigurations>
+                <quickLinksConfiguration>
+                    <fileName>quicklinks.json</fileName>
+                    <default>true</default>
+                </quickLinksConfiguration>
+            </quickLinksConfigurations>
+
+            <components>
+                <component>
+                    <name>FLINK_MASTER</name>
+                    <displayName>Flink Master</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/flink_master.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+                <component>
+                    <name>FLINK_SLAVE</name>
+                    <displayName>Flink Slave</displayName>
+                    <category>SLAVE</category>
+                    <cardinality>0+</cardinality>
+                    <commandScript>
+                        <script>scripts/flink_slave.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+            </components>
+
+            <osSpecifics>
+                <osSpecific>
+                    <osFamily>any</osFamily>
+                    <packages>
+                        <package>
+                            <name>flink</name>
+                        </package>
+                    </packages>
+                </osSpecific>
+            </osSpecifics>
+
+            <configuration-dependencies>
+                <config-type>flink-site.xml</config-type>
+                <config-type>flink-conf.xml</config-type>
+                <config-type>sql-client-defaults.xml</config-type>
+                <config-type>zoo.xml</config-type>
+            </configuration-dependencies>
+        </service>
+    </services>
+</metainfo>

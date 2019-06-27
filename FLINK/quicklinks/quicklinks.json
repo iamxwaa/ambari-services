@@ -1,0 +1,21 @@
+{
+  "name": "default",
+  "description": "default quick links configuration",
+  "configuration": {
+    "links": [
+      {
+        "name": "Flink",
+        "label": "Flink",
+        "requires_user_name": "false",
+        "component_name": "FLINK_MASTER",
+        "url":"%@://%@:%@",
+        "port":{
+          "http_property": "content",
+          "http_default_port": "8081",
+          "regex": "rest.port:\\s*(\\d+)",
+          "site": "flink-conf"
+        }
+      }
+    ]
+  }
+}

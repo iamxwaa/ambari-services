@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+   <property>
+      <name>user</name>
+      <value>root</value>
+      <description>flink 启动用户.</description>
+   </property>
+   <property>
+      <name>masters</name>
+      <value>localhost</value>
+      <description>master 节点地址.</description>
+      <value-attributes>
+        <type>content</type>
+        <show-property-name>true</show-property-name>
+      </value-attributes>
+   </property>
+   <property>
+      <name>slaves</name>
+      <value>localhost</value>
+      <description>slaves 节点地址.</description>
+      <value-attributes>
+        <type>content</type>
+        <show-property-name>true</show-property-name>
+      </value-attributes>
+   </property>
+</configuration>

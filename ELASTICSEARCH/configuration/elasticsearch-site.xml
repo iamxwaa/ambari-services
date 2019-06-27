@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+   <property>
+      <name>user</name>
+      <value>elasticsearch</value>
+      <description>elasticsearch 启动账号.</description>
+   </property>
+   <property>
+      <name>elasticsearch.home</name>
+      <value>/usr/share/elasticsearch</value>
+      <description>elasticsearch 安装目录.</description>
+   </property>
+   <property>
+      <name>elasticsearch.config.path</name>
+      <value>/etc/elasticsearch</value>
+      <description>elasticsearch 配置文件路径.</description>
+   </property>
+   <property>
+      <name>elasticsearch.log.path</name>
+      <value>/var/log/elasticsearch</value>
+      <description>elasticsearch 日志存放路径.</description>
+   </property>
+   <property>
+      <name>elasticsearch.data.path</name>
+      <value>/usr/share/elasticsearch/data</value>
+      <description>elasticsearch 数据存放路径.</description>
+   </property>
+   <property>
+      <name>java.home</name>
+      <value>/data/jdk1.8.0_20</value>
+      <description>java home 路径.</description>
+   </property>
+</configuration>

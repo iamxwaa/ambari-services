@@ -1,0 +1,34 @@
+{
+  "name": "default",
+  "description": "default quick links configuration",
+  "configuration": {
+    "links": [
+      {
+        "name": "vap_flume_ui",
+        "label": "Vap Flume Manager",
+        "requires_user_name": "false",
+        "component_name": "VAP_FLUME_UI",
+        "url":"%@://%@:%@/index",
+        "port":{
+          "http_property": "vap.flume.port",
+          "http_default_port": "28080",
+          "regex": "(\\d+)",
+          "site": "vap-flume-site"
+        }
+      },
+      {
+        "name": "vap_flume_ui",
+        "label": "Vap Flume Debug",
+        "requires_user_name": "false",
+        "component_name": "VAP_FLUME_UI",
+        "url":"%@://%@:%@/debug",
+        "port":{
+          "http_property": "vap.flume.port",
+          "http_default_port": "28080",
+          "regex": "(\\d+)",
+          "site": "vap-flume-site"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<metainfo>
+    <schemaVersion>2.0</schemaVersion>
+    <services>
+        <service>
+            <name>ELASTICSEARCH</name>
+            <displayName>elasticsearch</displayName>
+            <comment>Elasticsearch is a distributed RESTful search engine built for the cloud</comment>
+            <version>5.6.16</version>
+            
+            <quickLinksConfigurations>
+                <quickLinksConfiguration>
+                  <fileName>quicklinks.json</fileName>
+                  <default>true</default>
+                </quickLinksConfiguration>
+            </quickLinksConfigurations>
+            
+            <components>
+                <component>
+                    <name>ELASTICSEARCH_SLAVE</name>
+                    <displayName>elasticsearch</displayName>
+                    <category>SLAVE</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/elasticsearch.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+                <component>
+                    <name>CEREBRO</name>
+                    <displayName>cerebro</displayName>
+                    <category>SLAVE</category>
+                    <cardinality>0-1</cardinality>
+                    <commandScript>
+                        <script>scripts/cerebro.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+            </components>
+            
+            <osSpecifics>
+                <osSpecific>
+                    <osFamily>any</osFamily>
+                    <packages>
+                        <package>
+                          <name>elasticsearch</name>
+                        </package>
+                  </packages>
+                </osSpecific>
+            </osSpecifics>
+            
+            <configuration-dependencies>
+                <config-type>elasticsearch-site</config-type>
+                <config-type>elasticsearch</config-type>
+                <config-type>jvm</config-type>
+                <config-type>log4j2</config-type>
+                <config-type>cerebro-site</config-type>
+            </configuration-dependencies>
+        </service>
+    </services>
+</metainfo>
