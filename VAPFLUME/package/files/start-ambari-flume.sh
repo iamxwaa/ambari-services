@@ -1,59 +1,44 @@
 #!/bin/bash
-export FLUME_UI_HOME=/usr/hdp/current/vap-flume
-export FLUME_UI_APP=vap-flume-ui.jar
-export IS_AMBARI=true
-export FLUME_CONFIG_HOME=/etc/vap-flume
-FLUME_PID_PATH=/var/run/vap-flume
-FLUME_PID_FILE=vap-flume.pid
+#---------------------启动参数配置-----------------------
+#是否监听配置文件并重启
+auto_restart=false
+#文件扫描间隔时间(秒)
+flume_file_scan=10
+#是否在ambari中集成
+is_ambari=false
+#flume配置文件目录
+flume_config_home=$flume_ui_home/flume/conf
+#是否开启认证
+flume_ui_auth=false
+#认证地址
+flume_ui_auth_url="http://localhost:8080/token/confirmation"
+#rmi服务端口
+flume_ui_rmi=17261
+#是否后台启动
+daemon=true
+#-------------------启动参数配置结束-----------------------
 
-f_pid() {
-  if [ ! -d "$FLUME_PID_PATH" ];then
-    mkdir -p $FLUME_PID_PATH
-    echo 0
+java_home=""
+app_jar=vap-flume-ui.jar
+pid_file=$flume_ui_home/flume-ui.pid
+
+f_status() {
+  if [ -f "$pid_file" ];then
+    pid=`cat $pid_file`
+    ck=`ps -p $pid | wc -l`
+    if [[ "1" == "$ck" ]];then
+      echo "$pid_file exist,but process not running."
+      return 1
+    else
+      echo $pid
+      return 1
+    fi
   fi
-  pidfile=`ls $FLUME_PID_PATH`
-  if [[ "" != "$pidfile" ]] ;then
-    fpid=`cat $FLUME_PID_PATH/$FLUME_PID_FILE`
-    echo $fpid
-  else
-    echo 0
-  fi
-}
-
-f_fix() {
-  val_input=$1
-  val_default=$2
-  if [ -z "$val_input" ] ;then
-    echo $val_default
-  else
-    echo $val_input
-  fi
-}
-
-f_help() {
-  cat <<EOF
-示例: $0 <命令> [可选参数]...
-
-命令:
-  help                      show this help
-  start                     start flume ui
-  stop                      stop flume ui
-  status                    show status
-  
-start 参数:
-  --port,-p                 flume ui port,default 28080
-  --max-allow-memory,-mam   default 61440MB
-  --jvm-memory,-jm          jvm memory,default 1024mb
-  --auto-restart,-ar        watch config file and auto reload
-  
-stop 参数:
-  --force                   kill -9 pid
-  
-EOF
+  return 0
 }
 
 f_check() {
-  appath=$FLUME_UI_HOME/$FLUME_UI_APP
+  appath=$flume_ui_home/$app_jar
   if [ -f "$appath" ] ;then
     if [ -r "$appath" -a -w "$appath" -a -x "$appath" ] ;then
       echo "check $appath        ------------------OK"
@@ -65,7 +50,7 @@ f_check() {
   	echo "check $appath        ------------------FAIL"
   	return 0
   fi
-  appath2=$FLUME_UI_HOME/flume/bin/flume-ng
+  appath2=$flume_ui_home/flume/bin/flume-ng
   if [ -f "$appath2" ] ;then
     if [ -r "$appath2" -a -w "$appath2" -a -x "$appath2" ] ;then
       echo "check $appath2        ------------------OK"
@@ -81,94 +66,59 @@ f_check() {
 }
 
 f_start() {
-  pid=`f_pid`
-  if [[ 0 = "$pid" ]] || [[ "-1" = "$pid" ]];then
+  f_status
+  stat=$?
+  if [[ 0 == $stat ]];then
     f_check
-    stat=$?
-    if [[ 1 = "$stat" ]] ;then
-      if [ ! -d "$FLUME_UI_HOME/logs" ];then
-        mkdir -p $FLUME_UI_HOME/logs
+    check=$?
+    if [[ 1 == $check ]];then
+      echo "start flume ui, port: $flume_ui_port."
+      java_run="java"
+      if [[ "" != "$java_home" ]];then
+        java_run=$java_home/bin/java
       fi
-      args="-Xms$1m -Xmx$1m -DFLUME_UI_HOME=$FLUME_UI_HOME -DFLUME_UI_PORT=$2 -DMAX_ALLOW_MEM=$3 -DAUTO_RESTART=$4 -DIS_AMBARI=true -DFLUME_CONFIG_HOME=/etc/vap-flume"
-	    java $args -jar $FLUME_UI_HOME/$FLUME_UI_APP > /dev/null &
-      fpid=$!
-      if [ ! -d "$FLUME_PID_PATH" ];then
-        mkdir -p $FLUME_PID_PATH
+      args="$java_opt"
+      args="$args -DFLUME_UI_PORT=$flume_ui_port"
+      args="$args -DFLUME_UI_HOME=$flume_ui_home"
+      args="$args -DMAX_ALLOW_MEM=$max_allow_mem"
+      args="$args -DAUTO_RESTART=$auto_restart"
+      args="$args -DFLUME_FILE_SCAN=$flume_file_scan"
+      args="$args -DIS_AMBARI=$is_ambari"
+      args="$args -DFLUME_CONFIG_HOME=$flume_config_home"
+      args="$args -DFLUME_UI_AUTH=$flume_ui_auth"
+      args="$args -DFLUME_UI_AUTH_URL=$flume_ui_auth_url"
+      args="$args -DFLUME_UI_RMI=$flume_ui_rmi"
+      if [[ "" != "$java_home" ]];then
+        args="$args -DUSER_JAVA_HOME=$java_home"
       fi
-      echo $fpid > $FLUME_PID_PATH/$FLUME_PID_FILE
-      sleep 2
-      echo $fpid 
+      cmd="$java_run $args -jar $flume_ui_home/$app_jar"
+      if [[ "true" == "$daemon" ]];then
+        nohup $cmd > /dev/null 2>&1 & echo $! > $pid_file
+        cat $pid_file
+      else
+        $cmd
+      fi
+    else
+      echo "start fail !!!"
     fi
-  else
-    echo "$pid"
   fi
 }
 
 f_stop() {
-  pid=`f_pid`
-  if [[ 0 = "$pid" ]] || [[ "-1" = "$pid" ]];then
-    echo "not running"
-  else
-    kill -$1 $pid
-    rm -f $FLUME_PID_PATH/$FLUME_PID_FILE
-  fi
+  echo "stop flume ui ..."
+  pid=`cat $pid_file`
+  kill -9 $pid
+  rm -f $pid_file
 }
 
-f_status() {
-  pid=`f_pid`
-  if [ 0 = "$pid" ] ;then 
-    echo "not running" 
-  else 
-    echo $pid
-  fi
-}
-
-cmd=$1
-
-case "$cmd" in
+case "$1" in
   start)
-    while [ -n "$*" ] ;do
-    arg=$1
-    shift
-      case $arg in
-        --port|-p)
-          ui_port=$1
-          shift
-        ;;
-        --max-allow-memory|-mam)
-          mam=$1
-          shift
-        ;;
-        --jvm-memory,-jm)
-          jvmm=$1
-          shift
-        ;;
-        --auto-restart,-ar)
-          auto=$1
-          shift
-        ;;
-      esac
-    done
-    export FLUME_UI_AUTH=false
-    export FLUME_UI_AUTH_URL="http://localhost:8080/token/confirmation"
-    FLUME_JVM=`f_fix $jvmm 1024`
-    FLUME_UI_PORT=`f_fix $ui_port 28080`
-    MAX_ALLOW_MEM=`f_fix $mam 61400`
-    AUTO_RESTART=`f_fix $auto false`
-    f_start $FLUME_JVM $FLUME_UI_PORT $MAX_ALLOW_MEM $AUTO_RESTART
+    f_start
   ;;
   stop)
-    if [ "$2" = "--force" ] ;then
-	    sign=9
-    else
-      sign=15
-    fi
-    f_stop $sign
+    f_stop
   ;;
   status)
     f_status
-  ;;
-  *)
-    f_help
   ;;
 esac

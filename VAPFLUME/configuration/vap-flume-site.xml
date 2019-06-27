@@ -7,24 +7,14 @@
     <value>28080</value>
     <description>flume 管理平台页面访问端口.</description>
  </property>
- <property>
-    <name>vap.flume.home</name>
-    <value>/usr/hdp/current/vap-flume</value>
-    <description>flume 管理平台家目录.</description>
- </property>
   <property>
     <name>vap.flume.ui.memory</name>
-    <value>1024</value>
+    <value>512</value>
     <description>flume 管理平台内存配置.</description>
  </property>
  <property>
     <name>vap.flume.collector.memory</name>
     <value>61400</value>
     <description>flume 管理平台采集器最大可用内存.</description>
- </property>
- <property>
-    <name>vap.flume.auto.restart</name>
-    <value>false</value>
-    <description>监控采集器配置文件并自动重启.</description>
  </property>
 </configuration>
